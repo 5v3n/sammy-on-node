@@ -8,9 +8,10 @@ http.createServer(function (request, response) {
 
  console.log('request: ' + request.url);
 	
-	var filePath = '.' + request.url;
-	if (filePath == './' || filePath == '.')
-		filePath = './index.html';
+	var root = './public'
+	var filePath = root + request.url;
+	if (filePath == root + '/' || filePath == root)
+		filePath = root + '/index.html';
 		
 	var extname = path.extname(filePath);
 	var contentType = 'text/html';
