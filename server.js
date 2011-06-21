@@ -1,50 +1,19 @@
-var http = require('http');
-var fs = require('fs');
-var path = require('path');
+var static = require('node-static');
 
 var port = process.env.PORT || 1337;
 
-http.createServer(function (request, response) {
+//
+// Create a node-static server instance to serve the './public' folder
+//
+var file = new(static.Server)('./public');
 
- console.log('request: ' + request.url);
-	
-	var root = './public'
-	var filePath = root + request.url;
-	if (filePath == root + '/' || filePath == root)
-		filePath = root + '/index.html';
-		
-	var extname = path.extname(filePath);
-	var contentType = 'text/html';
-	switch (extname) {
-		case '.js':
-			contentType = 'text/javascript';
-			break;
-		case '.css':
-			contentType = 'text/css';
-			break;
-	}
-	
-	path.exists(filePath, function(exists) {
-	
-		if (exists) {
-			fs.readFile(filePath, function(error, content) {
-				if (error) {
-					response.writeHead(500);
-					response.end();
-				}
-				else {
-					response.writeHead(200, { 'Content-Type': contentType });
-					response.end(content, 'utf-8');
-				}
-			});
-		}
-		else {
-			response.writeHead(404);
-			response.end();
-		}
-	});
-	
+require('http').createServer(function (request, response) {
+    request.addListener('end', function () {
+        //
+        // Serve files!
+        //
+        file.serve(request, response);
+    });
 }).listen(port);
 
-console.log('Server running at http://127.0.0.1:' + port +'/');
-
+console.log('static fileserver listening to port ' + port)
